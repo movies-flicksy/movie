@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FLICKSY | Premium Cinema</title>
     
+    <!-- 1. تسريع الصور (Optimization Tags) -->
+    <!-- يخبر المتصفح بالاتصال بسيرفرات الصور فوراً -->
+    <link rel="preconnect" href="https://i.ibb.co">
+    <link rel="preconnect" href="https://image.tmdb.org">
+    
+    <!-- تحميل صورة الخلفية الكبيرة فوراً (أهم خطوة للسرعة) -->
+    <link rel="preload" as="image" href="https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg">
+
     <!-- الخطوط والأيقونات -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -42,6 +50,7 @@
 
         header {
             height: 75vh;
+            /* تم تحسين الخلفية لتعمل مع التحميل المسبق */
             background: linear-gradient(to top, var(--bg-color), rgba(0,0,0,0.3)), 
                         url('https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg');
             background-size: cover; background-position: center;
@@ -62,8 +71,13 @@
         }
         .movie-card:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 10; }
 
-        .poster-wrapper { position: relative; width: 100%; padding-top: 150%; }
-        .poster-wrapper img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        .poster-wrapper { position: relative; width: 100%; padding-top: 150%; background: #222; }
+        .poster-wrapper img { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; 
+            opacity: 0; transition: opacity 0.5s ease-in; /* تأثير ظهور ناعم */
+        }
+        .poster-wrapper img.loaded { opacity: 1; }
+        
         .rating-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: #ffd700; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(255, 215, 0, 0.3); }
         
         .card-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
@@ -72,7 +86,7 @@
         .movie-card:hover .watch-btn { background-color: var(--primary-color); border-color: var(--primary-color); }
 
         /* =========================================
-           3. نافذة التفاصيل (DETAILS MODAL - Step 1)
+           3. نافذة التفاصيل (DETAILS MODAL)
            ========================================= */
         .details-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
@@ -102,12 +116,11 @@
         .close-btn:hover { background: white; color: black; }
 
         /* =========================================
-           4. نافذة التحقق (LOCKER MODAL - Step 2)
+           4. نافذة التحقق (LOCKER MODAL)
            ========================================= */
         .locker-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 3000; /* أعلى من التفاصيل */
-            display: none; align-items: center; justify-content: center; padding: 15px;
+            z-index: 3000; display: none; align-items: center; justify-content: center; padding: 15px;
             font-family: 'Montserrat', sans-serif;
         }
         .locker-overlay.active { display: flex; animation: fadeIn 0.3s; }
@@ -205,7 +218,7 @@
         <div class="movie-grid" id="movieList"></div>
     </div>
 
-    <!-- 4. Details Modal (الخطوة الأولى) -->
+    <!-- 4. Details Modal -->
     <div class="details-overlay" id="detailsModal">
         <div class="details-container">
             <div class="close-btn" onclick="closeDetails()">×</div>
@@ -225,7 +238,7 @@
         </div>
     </div>
 
-    <!-- 5. Locker Modal (الخطوة الثانية) -->
+    <!-- 5. Locker Modal -->
     <div class="locker-overlay" id="lockerModal">
         <div class="locker-box">
             <span class="close-btn" style="top:10px; right:10px; font-size:20px; width:30px; height:30px; line-height:30px;" onclick="closeLocker()">&times;</span>
@@ -282,8 +295,10 @@
     </div>
 
     <script>
-        // رابط العروض الخاص بك
-        const LOCKER_LINK = "https://lockedapp.org/cl/i/qnkwl5"; 
+        // ============================================
+        // 1. تحديث رابط اللوكر كما طلبت
+        // ============================================
+        const LOCKER_LINK = "https://lockedapp.store/cl/i/344ovv"; 
 
         // بيانات الأفلام
         const movies = [
@@ -342,17 +357,19 @@
         const grid = document.getElementById('movieList');
         const detailsModal = document.getElementById('detailsModal');
         const lockerModal = document.getElementById('lockerModal');
-        let currentMovie = {}; // لتخزين الفيلم الحالي
+        let currentMovie = {}; 
 
-        // 1. Render Grid
+        // Render Grid
         movies.forEach(movie => {
             const card = document.createElement('div');
             card.className = 'movie-card';
-            card.onclick = () => openDetails(movie); // عند الضغط يفتح التفاصيل
+            card.onclick = () => openDetails(movie); 
 
+            // تم إضافة onload لإظهار الصورة بنعومة عند اكتمال التحميل
+            // وتم استخدام loading="lazy" فقط للصور البعيدة، ولكن السيرفرات المتصل بها مسبقاً ستسرع العملية
             card.innerHTML = `
                 <div class="poster-wrapper">
-                    <img src="${movie.img}" alt="${movie.title}" loading="lazy"
+                    <img src="${movie.img}" alt="${movie.title}" loading="lazy" onload="this.classList.add('loaded')"
                          onerror="this.src='https://placehold.co/400x600/111/444?text=${encodeURIComponent(movie.title)}'">
                     <div class="rating-badge">★ 9.0</div>
                 </div>
@@ -364,9 +381,8 @@
             grid.appendChild(card);
         });
 
-        // 2. Open Details Modal
         function openDetails(movie) {
-            currentMovie = movie; // حفظ الفيلم المختار
+            currentMovie = movie; 
             document.getElementById('detailsPoster').src = movie.img;
             document.getElementById('detailsBg').src = movie.img;
             document.getElementById('detailsTitle').innerText = movie.title;
@@ -383,15 +399,10 @@
             document.body.style.overflow = 'auto';
         }
 
-        // 3. Open Locker Modal
         function openLocker() {
-            // نستخدم الفيلم المحفوظ currentMovie
             document.getElementById('lockerImg').src = currentMovie.img;
             document.getElementById('lockerTitle').innerText = currentMovie.title;
-            
-            lockerModal.classList.add('active'); // إظهار اللوكر
-            // (اختياري) يمكنك إغلاق نافذة التفاصيل إذا أردت
-            // closeDetails(); 
+            lockerModal.classList.add('active'); 
         }
 
         function closeLocker() {
@@ -402,9 +413,7 @@
             window.open(LOCKER_LINK, '_blank');
         }
 
-        // إغلاق عند الضغط خارج المربع
         detailsModal.onclick = (e) => { if(e.target === detailsModal) closeDetails(); }
-        // lockerModal.onclick = (e) => { if(e.target === lockerModal) closeLocker(); } // ملغي لزيادة التحويل
     </script>
 </body>
 </html>
