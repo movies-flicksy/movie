@@ -5,30 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FLICKSY | Premium Cinema</title>
     
-    <!-- 1. تسريع الصور (Optimization Tags) -->
-    <!-- يخبر المتصفح بالاتصال بسيرفرات الصور فوراً -->
     <link rel="preconnect" href="https://i.ibb.co">
     <link rel="preconnect" href="https://image.tmdb.org">
-    
-    <!-- تحميل صورة الخلفية الكبيرة فوراً (أهم خطوة للسرعة) -->
     <link rel="preload" as="image" href="https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg">
 
-    <!-- الخطوط والأيقونات -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* =========================================
-           1. الأساسيات (Global Styles)
+           Styles
            ========================================= */
         :root {
             --bg-color: #141414;
             --card-bg: #1f1f1f;
             --text-color: #ffffff;
-            --primary-color: #e50914; /* Netflix Red */
+            --primary-color: #e50914;
             --modal-bg: #18181b;
-            
-            /* ألوان اللوكر */
             --btn-green: #00ffbf;
             --btn-badge: #ff9d00;
         }
@@ -36,9 +29,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
 
-        /* =========================================
-           2. الصفحة الرئيسية (Main Page)
-           ========================================= */
         nav {
             display: flex; justify-content: space-between; align-items: center;
             padding: 20px 5%; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
@@ -50,7 +40,6 @@
 
         header {
             height: 75vh;
-            /* تم تحسين الخلفية لتعمل مع التحميل المسبق */
             background: linear-gradient(to top, var(--bg-color), rgba(0,0,0,0.3)), 
                         url('https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg');
             background-size: cover; background-position: center;
@@ -74,7 +63,7 @@
         .poster-wrapper { position: relative; width: 100%; padding-top: 150%; background: #222; }
         .poster-wrapper img { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; 
-            opacity: 0; transition: opacity 0.5s ease-in; /* تأثير ظهور ناعم */
+            opacity: 0; transition: opacity 0.5s ease-in; 
         }
         .poster-wrapper img.loaded { opacity: 1; }
         
@@ -85,9 +74,7 @@
         .watch-btn { background-color: transparent; border: 1px solid #555; color: #fff; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; width: 100%; transition: 0.2s; text-transform: uppercase; }
         .movie-card:hover .watch-btn { background-color: var(--primary-color); border-color: var(--primary-color); }
 
-        /* =========================================
-           3. نافذة التفاصيل (DETAILS MODAL)
-           ========================================= */
+        /* Modal Styles */
         .details-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
             z-index: 2000; display: none; justify-content: center; align-items: flex-start;
@@ -115,16 +102,13 @@
         .close-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.5); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; z-index: 10; transition: 0.2s; }
         .close-btn:hover { background: white; color: black; }
 
-        /* =========================================
-           4. نافذة التحقق (LOCKER MODAL)
-           ========================================= */
+        /* Locker Styles */
         .locker-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             z-index: 3000; display: none; align-items: center; justify-content: center; padding: 15px;
             font-family: 'Montserrat', sans-serif;
         }
         .locker-overlay.active { display: flex; animation: fadeIn 0.3s; }
-
         .locker-box {
             background: #18181b; width: 100%; max-width: 450px; 
             border-radius: 8px; overflow: hidden; position: relative;
@@ -134,59 +118,48 @@
             transform: scale(0.95); opacity: 0; transition: 0.3s;
         }
         .locker-overlay.active .locker-box { transform: scale(1); opacity: 1; }
-
         .mf-header {
             background: #121212; padding: 12px; border-bottom: 1px solid #333;
             display: flex; justify-content: center; align-items: center; gap: 8px;
-            font-weight: 800; font-size: 18px; color: #fff; font-family: 'Montserrat', sans-serif;
+            font-weight: 800; font-size: 18px; color: #fff;
         }
         .mf-header i { color: #0070f3; }
-
         .l-game-info { padding: 25px 20px 10px; }
         .l-icon { width: 100px; height: 150px; border-radius: 8px; margin: 0 auto 12px; display: block; box-shadow: 0 5px 20px rgba(0,0,0,0.5); object-fit: cover; }
-        .l-title { font-size: 18px; font-weight: 800; margin-bottom: 4px; color: #fff; font-family: 'Montserrat', sans-serif; text-transform: uppercase; }
-        .l-secure { color: #2ecc71; font-size: 11px; font-weight: 700; display: flex; justify-content: center; gap: 5px; align-items: center; margin-bottom: 20px; font-family: 'Montserrat', sans-serif; }
-        
+        .l-title { font-size: 18px; font-weight: 800; margin-bottom: 4px; color: #fff; text-transform: uppercase; }
+        .l-secure { color: #2ecc71; font-size: 11px; font-weight: 700; display: flex; justify-content: center; gap: 5px; align-items: center; margin-bottom: 20px; }
         .instructions {
             text-align: left; background: #1e1e22; margin: 0 20px 20px; padding: 12px;
-            border-left: 3px solid #ff5722; border-radius: 4px; font-size: 12px; line-height: 1.5;
-            font-family: 'Montserrat', sans-serif; color: #ccc;
+            border-left: 3px solid #ff5722; border-radius: 4px; font-size: 12px; line-height: 1.5; color: #ccc;
         }
         .instructions strong { color: #ffffff; font-weight: 900; font-size: 1.2em; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
         .instructions ul { list-style: none; margin-top: 6px; padding-left: 2px; }
         .instructions li { margin-bottom: 3px; color: #aaa; font-size: 11px; display: flex; gap: 6px; align-items: center; }
         .instructions li span { background: #ff9d00; color: #000; width: 14px; height: 14px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 9px; flex-shrink: 0; }
-
         .tasks-list { display: flex; flex-direction: column; gap: 10px; padding: 0 20px; }
-        
         .task-btn-old {
             background: var(--btn-green); color: #000; padding: 12px 15px;
             border-radius: 50px; font-weight: 800; font-size: 13px;
             cursor: pointer; position: relative;
             display: flex; align-items: center; justify-content: flex-start;
             gap: 10px; box-shadow: 0 4px 12px rgba(0, 255, 191, 0.2);
-            transition: transform 0.2s; text-decoration: none; font-family: 'Montserrat', sans-serif;
+            transition: transform 0.2s; text-decoration: none;
         }
         .task-btn-old:hover { transform: scale(1.02); filter: brightness(1.05); }
         .task-icon-small { width: 20px; height: 20px; object-fit: contain; }
-
         .arrow-anim { color: #ff0000; font-size: 14px; margin-right: 5px; animation: moveArrow 0.8s infinite alternate; }
         @keyframes moveArrow { from { transform: translateX(0); } to { transform: translateX(4px); } }
-
         .badge-float {
             position: absolute; top: -6px; right: 10px;
             background: var(--btn-badge); color: #000;
             font-size: 8px; font-weight: 900; padding: 2px 6px;
             border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transform: rotate(5deg); font-family: 'Montserrat', sans-serif;
+            transform: rotate(5deg);
         }
         .badge-float.med { background: #ff5722; color: #fff; }
-
-        .wait-txt { margin-top: 20px; color: #666; font-size: 11px; font-weight: 600; animation: pulse 1.5s infinite; font-family: 'Montserrat', sans-serif; }
-        
+        .wait-txt { margin-top: 20px; color: #666; font-size: 11px; font-weight: 600; animation: pulse 1.5s infinite; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes pulse { 50% { opacity: 0.5; } }
-
         @media (max-width: 900px) {
             .details-content { flex-direction: column; align-items: center; margin-top: -80px; padding: 20px; }
             .details-poster { width: 200px; height: 300px; margin-bottom: 20px; }
@@ -197,13 +170,11 @@
 </head>
 <body>
 
-    <!-- 1. Navbar -->
     <nav>
         <div class="logo">FLICKSY</div>
         <button class="btn-main">SIGN IN</button>
     </nav>
 
-    <!-- 2. Hero Section -->
     <header>
         <div class="hero-content">
             <h1>Unlimited Movies, TV Shows, and More.</h1>
@@ -212,13 +183,12 @@
         </div>
     </header>
 
-    <!-- 3. Movie Grid -->
     <div class="container">
-        <h2 class="section-title">Trending Now (Top 10)</h2>
+        <h2 class="section-title">Trending Now</h2>
         <div class="movie-grid" id="movieList"></div>
     </div>
 
-    <!-- 4. Details Modal -->
+    <!-- Details Modal -->
     <div class="details-overlay" id="detailsModal">
         <div class="details-container">
             <div class="close-btn" onclick="closeDetails()">×</div>
@@ -238,22 +208,19 @@
         </div>
     </div>
 
-    <!-- 5. Locker Modal -->
+    <!-- Locker Modal -->
     <div class="locker-overlay" id="lockerModal">
         <div class="locker-box">
             <span class="close-btn" style="top:10px; right:10px; font-size:20px; width:30px; height:30px; line-height:30px;" onclick="closeLocker()">&times;</span>
-            
             <div class="mf-header">
                 <i class="fas fa-cloud"></i> MediaFire
-                <div style="font-size: 9px; background: #333; padding: 2px 5px; border-radius: 3px; margin-left: 8px; font-weight: 400; color: #aaa; font-family: sans-serif;">Secure</div>
+                <div style="font-size: 9px; background: #333; padding: 2px 5px; border-radius: 3px; margin-left: 8px; font-weight: 400; color: #aaa;">Secure</div>
             </div>
-
             <div class="l-game-info">
                 <img id="lockerImg" src="" class="l-icon">
                 <div class="l-title">WATCH <span id="lockerTitle" style="color: #0070f3;"></span></div>
                 <div class="l-secure"><i class="fas fa-shield-alt"></i> Verified • HD Quality</div>
             </div>
-
             <div class="instructions">
                 Complete <strong>ONE</strong> quick task to verify you are human.
                 <ul>
@@ -262,7 +229,6 @@
                     <li><span>3</span> Movie starts instantly</li>
                 </ul>
             </div>
-
             <div class="tasks-list">
                 <div class="task-btn-old" onclick="goToOffer()">
                     <i class="fas fa-caret-right arrow-anim"></i>
@@ -289,69 +255,70 @@
                     <div class="badge-float">EASY</div>
                 </div>
             </div>
-
             <div class="wait-txt">Waiting for completion...</div>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // 1. تحديث رابط اللوكر كما طلبت
-        // ============================================
         const LOCKER_LINK = "https://lockedapp.store/cl/i/344ovv"; 
 
-        // بيانات الأفلام
         const movies = [
+            // ------------------------------------------------
+            //  الصور الجديدة (بأسمائها المعدلة)
+            // ------------------------------------------------
             { 
-                title: "Interstellar", year: "2014", genre: "Sci-Fi",
-                img: "https://i.ibb.co/xSKqmDK7/images-5.jpg", 
-                desc: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival." 
+                title: "The Boys S4", year: "2024", genre: "Series",
+                img: "https://i.ibb.co/ks7gXF4f/Saison-4-Infobox.webp", 
+                desc: "The world is on the brink. Victoria Neuman is closer than ever to the Oval Office and under the muscly thumb of Homelander." 
             },
             { 
-                title: "Dexter", year: "2006", genre: "Crime",
-                img: "https://i.ibb.co/KSqYN0c/Zmutdo-Rvhd-P86k1-Hz2-LJAQ-showposter-hq.jpg", 
-                desc: "By day, mild-mannered Dexter is a blood-spatter analyst for the police. By night, he is a serial killer." 
+                title: "Fall", year: "2022", genre: "Thriller",
+                img: "https://i.ibb.co/Fk5jrfL9/images.jpg", 
+                desc: "Best friends Becky and Hunter find themselves trapped 2,000 feet up the top of a remote, abandoned radio tower." 
             },
             { 
-                title: "The Walking Dead", year: "2010", genre: "Horror",
-                img: "https://image.tmdb.org/t/p/w500/xf9wuDcqlUPWABZNeDKPbZUjWx0.jpg", 
-                desc: "Sheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins and must lead a group of survivors." 
+                title: "Man of Steel", year: "2013", genre: "Action",
+                img: "https://i.ibb.co/fz68whXS/91ejsw-Ar0e-L-AC-UF894-1000-QL80.jpg", 
+                desc: "An alien child is evacuated from his dying world and sent to Earth to live among humans." 
             },
             { 
-                title: "The Dark Knight", year: "2008", genre: "Action",
-                img: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", 
-                desc: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest tests." 
+                title: "Moonfall", year: "2022", genre: "Sci-Fi",
+                img: "https://i.ibb.co/chbQ0N5L/image.jpg", 
+                desc: "A mysterious force knocks the Moon from its orbit around Earth and sends it hurtling on a collision course with life as we know it." 
+            },
+            // الفيلم المشهور بدلاً من الصورة المكررة
+            { 
+                title: "Avengers: Endgame", year: "2019", genre: "Action",
+                img: "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg", 
+                desc: "After the devastating events of Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more." 
             },
             { 
-                title: "Boyka: Undisputed", year: "2016", genre: "Fighting",
-                img: "https://i.ibb.co/4wCd3r4g/images-4.jpg", 
-                desc: "Boyka is shooting for the big leagues when an accidental death in the ring makes him question everything." 
+                title: "New Image 5 (Edit Name)", year: "2024", genre: "Thriller",
+                img: "https://i.ibb.co/hRR54Xq1/images-1.jpg", 
+                desc: "Please update movie description." 
             },
             { 
-                title: "Fast X", year: "2023", genre: "Action",
-                img: "https://image.tmdb.org/t/p/w500/fiVW06jE7z9YnO4trhaMEdclSiC.jpg", 
-                desc: "Dom Toretto and his family are targeted by the vengeful son of drug kingpin Hernan Reyes." 
+                title: "New Image 6 (Edit Name)", year: "2024", genre: "Mystery",
+                img: "https://i.ibb.co/bjKThPRd/images-2.jpg", 
+                desc: "Please update movie description." 
             },
-            { 
-                title: "Hereditary", year: "2018", genre: "Horror",
-                img: "https://i.ibb.co/bRMPWv6w/Hereditary.png", 
-                desc: "After the family matriarch passes away, a grieving family is haunted by tragic and disturbing occurrences." 
-            },
-            { 
-                title: "Zootopia 2", year: "Soon", genre: "Animation",
-                img: "https://i.ibb.co/prvcpDKf/MV5-BOWNm-ZGQ0-OTkt-MDIy-ZS00-Yj-Jk-LTg5-MTEt-ZTk2-NGM4-NTM5-MDE2-Xk-Ey-Xk-Fqc-Gc-V1-FMjpg-UX1000.jpg", 
-                desc: "Judy Hopps and Nick Wilde return for a new adventure in the city where anyone can be anything." 
-            }, 
-            { 
-                title: "Hacker", year: "2016", genre: "Thriller",
-                img: "https://i.ibb.co/84DyZ6vx/images-6.jpg", 
-                desc: "Alex, a young Ukrainian immigrant, turns to a life of crime and identity theft with the help of a darkweb contact." 
-            }, 
-            { 
-                title: "It", year: "2017", genre: "Horror",
-                img: "https://i.ibb.co/wZyRRKJw/unnamed.jpg", 
-                desc: "In the summer of 1989, a group of bullied kids band together to destroy a shape-shifting monster." 
-            }
+
+            // ------------------------------------------------
+            //  الأفلام القديمة
+            // ------------------------------------------------
+            { title: "The Fall Guy", year: "2024", genre: "Action", img: "https://i.ibb.co/70CrkMB/Fall-Guy-1.webp", desc: "A stuntman springs back into action when the star of a big-budget movie goes missing." },
+            { title: "The Happening", year: "2008", genre: "Thriller", img: "https://i.ibb.co/zV2Rm3sc/the-happening.jpg", desc: "A science teacher struggles to survive a plague." },
+            { title: "John Wick: Chapter 1", year: "2014", genre: "Action", img: "https://i.ibb.co/q3fMrt4V/MV5-BMTU2-Nj-A1-ODgz-MF5-BMl5-Ban-Bn-Xk-Ft-ZTgw-MTM2-MTI4-Mj-E-V1.jpg", desc: "An ex-hit-man comes out of retirement." },
+            { title: "Interstellar", year: "2014", genre: "Sci-Fi", img: "https://i.ibb.co/xSKqmDK7/images-5.jpg", desc: "A team of explorers travel through a wormhole in space." },
+            { title: "Dexter", year: "2006", genre: "Crime", img: "https://i.ibb.co/KSqYN0c/Zmutdo-Rvhd-P86k1-Hz2-LJAQ-showposter-hq.jpg", desc: "Mild-mannered Dexter is a serial killer." },
+            { title: "The Walking Dead", year: "2010", genre: "Horror", img: "https://image.tmdb.org/t/p/w500/xf9wuDcqlUPWABZNeDKPbZUjWx0.jpg", desc: "Rick Grimes wakes up from a coma in a zombie apocalypse." },
+            { title: "The Dark Knight", year: "2008", genre: "Action", img: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", desc: "Batman faces the Joker." },
+            { title: "Boyka: Undisputed", year: "2016", genre: "Fighting", img: "https://i.ibb.co/4wCd3r4g/images-4.jpg", desc: "Boyka shoots for the big leagues." },
+            { title: "Fast X", year: "2023", genre: "Action", img: "https://image.tmdb.org/t/p/w500/fiVW06jE7z9YnO4trhaMEdclSiC.jpg", desc: "Dom Toretto faces a new enemy." },
+            { title: "Hereditary", year: "2018", genre: "Horror", img: "https://i.ibb.co/bRMPWv6w/Hereditary.png", desc: "A grieving family is haunted." },
+            { title: "Zootopia 2", year: "Soon", genre: "Animation", img: "https://i.ibb.co/prvcpDKf/MV5-BOWNm-ZGQ0-OTkt-MDIy-ZS00-Yj-Jk-LTg5-MTEt-ZTk2-NGM4-NTM5-MDE2-Xk-Ey-Xk-Fqc-Gc-V1-FMjpg-UX1000.jpg", desc: "Judy Hopps and Nick Wilde return." },
+            { title: "Hacker", year: "2016", genre: "Thriller", img: "https://i.ibb.co/84DyZ6vx/images-6.jpg", desc: "A young immigrant turns to cyber crime." },
+            { title: "It", year: "2017", genre: "Horror", img: "https://i.ibb.co/wZyRRKJw/unnamed.jpg", desc: "Kids band together to destroy a monster." }
         ];
 
         const grid = document.getElementById('movieList');
@@ -359,14 +326,10 @@
         const lockerModal = document.getElementById('lockerModal');
         let currentMovie = {}; 
 
-        // Render Grid
         movies.forEach(movie => {
             const card = document.createElement('div');
             card.className = 'movie-card';
             card.onclick = () => openDetails(movie); 
-
-            // تم إضافة onload لإظهار الصورة بنعومة عند اكتمال التحميل
-            // وتم استخدام loading="lazy" فقط للصور البعيدة، ولكن السيرفرات المتصل بها مسبقاً ستسرع العملية
             card.innerHTML = `
                 <div class="poster-wrapper">
                     <img src="${movie.img}" alt="${movie.title}" loading="lazy" onload="this.classList.add('loaded')"
@@ -375,7 +338,7 @@
                 </div>
                 <div class="card-info">
                     <h3 class="movie-title">${movie.title}</h3>
-                    <button class="watch-btn">Details</button>
+                    <button class="watch-btn">WATCH NOW</button>
                 </div>
             `;
             grid.appendChild(card);
@@ -389,7 +352,6 @@
             document.getElementById('detailsDesc').innerText = movie.desc;
             document.getElementById('detailsYear').innerText = movie.year;
             document.getElementById('detailsGenre').innerText = movie.genre;
-            
             detailsModal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
