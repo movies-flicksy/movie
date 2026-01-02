@@ -59,15 +59,7 @@
 
         .container { padding: 50px 5%; }
         .section-title { margin-bottom: 30px; border-left: 5px solid var(--primary-color); padding-left: 15px; font-size: 1.8rem; font-weight: 600; }
-        
-        /* 
-           تعديل: جعل الشبكة تعرض بطاقات أصغر (150px بدلاً من 200px)
-        */
-        .movie-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
-            gap: 15px; 
-        }
+        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
 
         .movie-card {
             background-color: var(--card-bg); border-radius: 8px; overflow: hidden;
@@ -85,12 +77,9 @@
         
         .rating-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: #ffd700; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(255, 215, 0, 0.3); }
         
-        /* تعديل: تقليل المسافات الداخلية لتتناسب مع الحجم الصغير */
-        .card-info { padding: 10px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
-        
-        /* تعديل: تصغير حجم الخط قليلاً */
-        .movie-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .watch-btn { background-color: transparent; border: 1px solid #555; color: #fff; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; width: 100%; transition: 0.2s; text-transform: uppercase; }
+        .card-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
+        .movie-title { font-size: 1rem; font-weight: 600; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .watch-btn { background-color: transparent; border: 1px solid #555; color: #fff; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; width: 100%; transition: 0.2s; text-transform: uppercase; }
         .movie-card:hover .watch-btn { background-color: var(--primary-color); border-color: var(--primary-color); }
 
         /* Modal Styles */
@@ -216,13 +205,7 @@
             .details-content { flex-direction: column; align-items: center; margin-top: -50px; padding: 20px; }
             .details-poster { width: 220px; height: 330px; margin-bottom: 20px; }
             .details-info { padding-top: 0; text-align: center; }
-            
-            /* تعديل: تحديد عمودين للأجهزة المحمولة مع حجم مناسب */
-            .movie-grid { 
-                grid-template-columns: repeat(2, 1fr); 
-                gap: 15px; 
-            }
-            
+            .movie-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
             .details-title { font-size: 2.2rem; }
             .platform-buttons-container { flex-direction: row; gap: 10px; }
             .btn-platform { padding: 14px 10px; font-size: 0.9rem; }
@@ -372,7 +355,59 @@
             { title: "Hereditary", year: "2018", genre: "Horror", img: "https://i.ibb.co/bRMPWv6w/Hereditary.png", desc: "When Ellen, the matriarch of the Graham family, passes away, her daughter's family begins to unravel cryptic and increasingly terrifying secrets about their ancestry. The more they discover, the more they find themselves trying to outrun the sinister fate they seem to have inherited. A deeply unsettling psychological horror." },
             { title: "Zootopia 2", year: "Soon", genre: "Animation", img: "https://i.ibb.co/prvcpDKf/MV5-BOWNm-ZGQ0-OTkt-MDIy-ZS00-Yj-Jk-LTg5-MTEt-ZTk2-NGM4-NTM5-MDE2-Xk-Ey-Xk-Fqc-Gc-V1-FMjpg-UX1000.jpg", desc: "The sequel to the smash hit. Officers Judy Hopps and Nick Wilde return for a new adventure in the sprawling metropolis of Zootopia. New mysteries, new districts, and new friends await as they tackle their toughest case yet." },
             { title: "Hacker", year: "2016", genre: "Thriller", img: "https://i.ibb.co/84DyZ6vx/images-6.jpg", desc: "Alex, a young Ukrainian immigrant, supports his parents by doing odd jobs on the internet. His best friend Sye is a black market dealer who helps Alex make money. Together with a girl named Kira, a hacker, they create a chaotic web of identity theft and credit card fraud, but the deeper they go, the more dangerous the game becomes." },
-            { title: "It", year: "2017", genre: "Horror", img: "https://i.ibb.co/wZyRRKJw/unnamed.jpg", desc: "In the summer of 1989, a group of bullied kids band together to destroy a shape-shifting monster, which disguises itself as a clown and preys on the children of Derry, their small Maine town. As they face their own personal fears, they must unite to defeat the ancient evil known as Pennywise." }
+            { title: "It", year: "2017", genre: "Horror", img: "https://i.ibb.co/wZyRRKJw/unnamed.jpg", desc: "In the summer of 1989, a group of bullied kids band together to destroy a shape-shifting monster, which disguises itself as a clown and preys on the children of Derry, their small Maine town. As they face their own personal fears, they must unite to defeat the ancient evil known as Pennywise." },
+            
+            // --- NEW MOVIES ADDED BELOW ---
+            { 
+                title: "Sonic the Hedgehog", year: "2020", genre: "Adventure", 
+                img: "https://i.ibb.co/YFSfdwpm/images-4.jpg", 
+                desc: "After discovering a small, blue, fast hedgehog, a small-town police officer must help him defeat an evil genius who wants to do experiments on him." 
+            },
+            { 
+                title: "Triple Frontier", year: "2019", genre: "Action", 
+                img: "https://i.ibb.co/sd4wvTMC/1.jpg", 
+                desc: "Loyalties are tested when five former special forces operatives reunite to steal a drug lord's fortune, unleashing a chain of unintended consequences." 
+            },
+            { 
+                title: "The Meg", year: "2018", genre: "Sci-Fi", 
+                img: "https://i.ibb.co/tp0SWjsj/2.jpg", 
+                desc: "A group of scientists exploring the Marianas Trench encounter the largest marine predator that has ever existed - the Megalodon." 
+            },
+            { 
+                title: "Gravity", year: "2013", genre: "Sci-Fi", 
+                img: "https://i.ibb.co/spxM6zF6/images-5.jpg", 
+                desc: "Two astronauts work together to survive after an accident leaves them stranded in space." 
+            },
+            { 
+                title: "1917", year: "2019", genre: "War", 
+                img: "https://i.ibb.co/xSnHnB1d/images-6.jpg", 
+                desc: "April 6th, 1917. As a regiment assembles to wage war deep in enemy territory, two soldiers are assigned to race against time and deliver a message that will stop 1,600 men from walking straight into a deadly trap." 
+            },
+            { 
+                title: "Hunter Killer", year: "2018", genre: "Action", 
+                img: "https://i.ibb.co/4Z0W6QWz/images.webp", 
+                desc: "An untested American submarine captain teams with U.S. Navy SEALs to rescue the Russian president, who has been kidnapped by a rogue general." 
+            },
+            { 
+                title: "Fast & Furious", year: "2009", genre: "Action", 
+                img: "https://i.ibb.co/bcW82s9/images-7.jpg", 
+                desc: "Brian O'Conner, back working for the FBI in Los Angeles, teams up with Dominic Toretto to bring down a heroin importer by infiltrating his operation." 
+            },
+            { 
+                title: "Captain America", year: "2011", genre: "Action", 
+                img: "https://i.ibb.co/WNypNL7s/compose-1.webp", 
+                desc: "Steve Rogers, a rejected military soldier, transforms into Captain America after taking a dose of a 'Super-Soldier serum'. But being Captain America comes at a price as he attempts to take down a war monger and a terrorist organization." 
+            },
+            { 
+                title: "Breaking Bad", year: "2008", genre: "Crime", 
+                img: "https://i.ibb.co/gbvCWMH6/download.jpg", 
+                desc: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine in order to secure his family's future." 
+            },
+            { 
+                title: "Extraction", year: "2020", genre: "Action", 
+                img: "https://i.ibb.co/6R7y1KX8/download-1.jpg", 
+                desc: "Tyler Rake, a fearless black market mercenary, embarks on the most deadly extraction of his career when he's enlisted to rescue the kidnapped son of an imprisoned international crime lord." 
+            }
         ];
 
         const grid = document.getElementById('movieList');
@@ -420,11 +455,10 @@
             document.getElementById('lockerImg').src = currentMovie.img;
             document.getElementById('lockerTitle').innerText = currentMovie.title;
 
-            // إذا كان المستخدم ضغط على ايفون
+            // إذا كان المستخدم ضغط على ايفون (إعادة العروض الأصلية كما كانت)
             if (platform === 'ios') {
                 activeLockerLink = IOS_LINK;
                 
-                // تغيير محتوى القائمة للعروض الجديدة فقط
                 taskListContainer.innerHTML = `
                     <div class="task-btn-old" onclick="goToOffer()">
                         <i class="fas fa-caret-right arrow-anim"></i>
@@ -441,27 +475,21 @@
                 `;
 
             } else {
-                // إذا كان المستخدم ضغط على أندرويد (تم حذف تيك توك)
+                // إذا كان المستخدم ضغط على أندرويد (تطبيق التعديلات المطلوبة)
                 activeLockerLink = ANDROID_LINK;
 
                 taskListContainer.innerHTML = `
                     <div class="task-btn-old" onclick="goToOffer()">
                         <i class="fas fa-caret-right arrow-anim"></i>
                         <img src="https://i.ibb.co/hJz7CQvf/images-1.jpg" class="task-icon-small">
-                        Download Alibaba App
+                        Download Alibaba App for 30s
                         <div class="badge-float">FAST</div>
                     </div>
                     <div class="task-btn-old" onclick="goToOffer()">
                         <i class="fas fa-caret-right arrow-anim"></i>
-                        <img src="https://i.ibb.co/d0RG4VJs/unnamed-1.png" class="task-icon-small">
-                        Get Norton Secure VPN
-                        <div class="badge-float med">FREE</div>
-                    </div>
-                    <div class="task-btn-old" onclick="goToOffer()">
-                        <i class="fas fa-caret-right arrow-anim"></i>
-                        <img src="https://i.ibb.co/h1VVLYVn/unnamed.png" class="task-icon-small">
-                        Play Cash'em All
-                        <div class="badge-float">EASY</div>
+                        <img src="https://i.ibb.co/PZz24YJ1/images-1.png" class="task-icon-small">
+                        Get $1,000 to your CashApp! - US
+                        <div class="badge-float med">HOT</div>
                     </div>
                 `;
             }
