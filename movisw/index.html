@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLICKSY | Premium Cinema</title>
+    
+    <link rel="preconnect" href="https://i.ibb.co">
+    <link rel="preconnect" href="https://image.tmdb.org">
+    <link rel="preconnect" href="https://c.ifushaar.com">
+    <link rel="preconnect" href="https://cimalek.art">
+    <link rel="preload" as="image" href="https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           Styles
+           ========================================= */
+        :root {
+            --bg-color: #141414;
+            --card-bg: #1f1f1f;
+            --text-color: #ffffff;
+            --primary-color: #e50914;
+            --modal-bg: #18181b;
+            --btn-green: #00ffbf;
+            --btn-badge: #ff9d00;
+            --android-color: #3DDC84;
+            --apple-color: #A6B1B7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 5%; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            position: fixed; width: 100%; z-index: 100;
+        }
+        .logo { font-size: 2rem; font-weight: 800; color: var(--primary-color); letter-spacing: 1px; cursor: pointer; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .btn-main { padding: 8px 20px; background-color: var(--primary-color); color: white; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer; transition: 0.3s; }
+        .btn-main:hover { background-color: #b20710; }
+
+        header {
+            height: 75vh;
+            background: linear-gradient(to top, var(--bg-color), rgba(0,0,0,0.3)), 
+                        url('https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg');
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; padding: 0 5%;
+        }
+        .hero-content { max-width: 700px; }
+        .hero-content h1 { font-size: 3.5rem; margin-bottom: 15px; line-height: 1.1; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); }
+        .hero-content p { font-size: 1.1rem; color: #ddd; margin-bottom: 25px; line-height: 1.6; }
+
+        .container { padding: 50px 5%; }
+        .section-title { margin-bottom: 30px; border-left: 5px solid var(--primary-color); padding-left: 15px; font-size: 1.8rem; font-weight: 600; }
+        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
+
+        .movie-card {
+            background-color: var(--card-bg); border-radius: 8px; overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; position: relative;
+            display: flex; flex-direction: column;
+        }
+        .movie-card:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 10; }
+
+        .poster-wrapper { position: relative; width: 100%; padding-top: 150%; background: #222; }
+        .poster-wrapper img { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; 
+            opacity: 0; transition: opacity 0.5s ease-in; 
+        }
+        .poster-wrapper img.loaded { opacity: 1; }
+        
+        .rating-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: #ffd700; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(255, 215, 0, 0.3); }
+        
+        .card-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
+        .movie-title { font-size: 1rem; font-weight: 600; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .watch-btn { background-color: transparent; border: 1px solid #555; color: #fff; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; width: 100%; transition: 0.2s; text-transform: uppercase; }
+        .movie-card:hover .watch-btn { background-color: var(--primary-color); border-color: var(--primary-color); }
+
+        /* Modal Styles */
+        .details-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
+            z-index: 2000; display: none; justify-content: center; align-items: flex-start;
+            overflow-y: auto; padding: 40px 20px; animation: fadeIn 0.4s ease;
+        }
+        .details-container {
+            background: #18181b; width: 100%; max-width: 1000px; border-radius: 16px;
+            overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); position: relative;
+            display: flex; flex-direction: column;
+        }
+        .details-hero { height: 450px; position: relative; overflow: hidden; }
+        .details-hero::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to top, #18181b 10%, transparent 90%);
+        }
+        .details-hero-bg { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+        
+        .details-content { 
+            position: relative; z-index: 2; display: flex; padding: 0 50px 50px; 
+            gap: 40px; margin-top: -100px; 
+        }
+        .details-poster { 
+            width: 300px; height: 450px; border-radius: 12px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6); object-fit: cover; 
+            flex-shrink: 0; border: 2px solid rgba(255,255,255,0.1); 
+        }
+        .details-info { padding-top: 60px; flex: 1; display: flex; flex-direction: column; }
+        
+        .details-title { font-size: 3.5rem; font-weight: 800; margin-bottom: 10px; line-height: 1; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .meta-tags { margin-bottom: 25px; display: flex; align-items: center; gap: 15px; color: #ccc; font-size: 1rem; }
+        .match-score { color: #46d369; font-weight: 800; font-size: 1.1rem; }
+        .quality-tag { border: 1px solid #aaa; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem; }
+
+        /* Platform Buttons */
+        .platform-buttons-container {
+            display: flex; gap: 15px; margin-bottom: 30px; width: 100%;
+        }
+        .btn-platform {
+            flex: 1; padding: 16px 20px; border: none; border-radius: 12px;
+            font-size: 1.1rem; font-weight: 700; color: #fff; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; overflow: hidden;
+        }
+        .btn-platform:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); filter: brightness(1.1); }
+        .btn-platform:active { transform: translateY(-1px); }
+        
+        .btn-android { background: linear-gradient(135deg, #3DDC84 0%, #2a9c5e 100%); }
+        .btn-ios { background: linear-gradient(135deg, #5e5e5e 0%, #000000 100%); }
+
+        .details-desc { 
+            font-size: 1.15rem; line-height: 1.8; color: #e0e0e0; 
+            background: rgba(255,255,255,0.03); padding: 25px; border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .close-btn { position: absolute; top: 25px; right: 25px; background: rgba(0,0,0,0.6); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; cursor: pointer; z-index: 10; transition: 0.2s; backdrop-filter: blur(5px); }
+        .close-btn:hover { background: white; color: black; transform: rotate(90deg); }
+
+        /* Locker Modal */
+        .locker-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 3000; display: none; align-items: center; justify-content: center; padding: 15px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .locker-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .locker-box {
+            background: #18181b; width: 100%; max-width: 450px; 
+            border-radius: 8px; overflow: hidden; position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            border-top: 4px solid #0070f3;
+            text-align: center; padding-bottom: 20px;
+            transform: scale(0.95); opacity: 0; transition: 0.3s;
+        }
+        .locker-overlay.active .locker-box { transform: scale(1); opacity: 1; }
+        .mf-header {
+            background: #121212; padding: 12px; border-bottom: 1px solid #333;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            font-weight: 800; font-size: 18px; color: #fff;
+        }
+        .mf-header i { color: #0070f3; }
+        .l-game-info { padding: 25px 20px 10px; }
+        .l-icon { width: 100px; height: 150px; border-radius: 8px; margin: 0 auto 12px; display: block; box-shadow: 0 5px 20px rgba(0,0,0,0.5); object-fit: cover; }
+        .l-title { font-size: 18px; font-weight: 800; margin-bottom: 4px; color: #fff; text-transform: uppercase; }
+        .l-secure { color: #2ecc71; font-size: 11px; font-weight: 700; display: flex; justify-content: center; gap: 5px; align-items: center; margin-bottom: 20px; }
+        .instructions {
+            text-align: left; background: #1e1e22; margin: 0 20px 20px; padding: 12px;
+            border-left: 3px solid #ff5722; border-radius: 4px; font-size: 12px; line-height: 1.5; color: #ccc;
+        }
+        .instructions strong { color: #ffffff; font-weight: 900; font-size: 1.2em; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
+        .instructions ul { list-style: none; margin-top: 6px; padding-left: 2px; }
+        .instructions li { margin-bottom: 3px; color: #aaa; font-size: 11px; display: flex; gap: 6px; align-items: center; }
+        .instructions li span { background: #ff9d00; color: #000; width: 14px; height: 14px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 9px; flex-shrink: 0; }
+        .tasks-list { display: flex; flex-direction: column; gap: 10px; padding: 0 20px; }
+        .task-btn-old {
+            background: var(--btn-green); color: #000; padding: 12px 15px;
+            border-radius: 50px; font-weight: 800; font-size: 13px;
+            cursor: pointer; position: relative;
+            display: flex; align-items: center; justify-content: flex-start;
+            gap: 10px; box-shadow: 0 4px 12px rgba(0, 255, 191, 0.2);
+            transition: transform 0.2s; text-decoration: none;
+        }
+        .task-btn-old:hover { transform: scale(1.02); filter: brightness(1.05); }
+        .task-icon-small { width: 20px; height: 20px; object-fit: contain; }
+        .arrow-anim { color: #ff0000; font-size: 14px; margin-right: 5px; animation: moveArrow 0.8s infinite alternate; }
+        @keyframes moveArrow { from { transform: translateX(0); } to { transform: translateX(4px); } }
+        .badge-float {
+            position: absolute; top: -6px; right: 10px;
+            background: var(--btn-badge); color: #000;
+            font-size: 8px; font-weight: 900; padding: 2px 6px;
+            border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transform: rotate(5deg);
+        }
+        .badge-float.med { background: #ff5722; color: #fff; }
+        .wait-txt { margin-top: 20px; color: #666; font-size: 11px; font-weight: 600; animation: pulse 1.5s infinite; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 50% { opacity: 0.5; } }
+
+        @media (max-width: 900px) {
+            .details-content { flex-direction: column; align-items: center; margin-top: -50px; padding: 20px; }
+            .details-poster { width: 220px; height: 330px; margin-bottom: 20px; }
+            .details-info { padding-top: 0; text-align: center; }
+            .movie-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .details-title { font-size: 2.2rem; }
+            .platform-buttons-container { flex-direction: row; gap: 10px; }
+            .btn-platform { padding: 14px 10px; font-size: 0.9rem; }
+            .meta-tags { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">FLICKSY</div>
+        <button class="btn-main">SIGN IN</button>
+    </nav>
+
+    <header>
+        <div class="hero-content">
+            <h1>Unlimited Movies, TV Shows, and More.</h1>
+            <p>Watch anywhere. Cancel anytime. Experience the best curated collection of action, drama, and thrillers.</p>
+            <button class="btn-main">Get Started</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2 class="section-title">Trending Now</h2>
+        <div class="movie-grid" id="movieList"></div>
+    </div>
+
+    <!-- Details Modal -->
+    <div class="details-overlay" id="detailsModal">
+        <div class="details-container">
+            <div class="close-btn" onclick="closeDetails()">×</div>
+            <div class="details-hero"><img src="" class="details-hero-bg" id="detailsBg"></div>
+            <div class="details-content">
+                <img src="" class="details-poster" id="detailsPoster">
+                <div class="details-info">
+                    <h1 class="details-title" id="detailsTitle">Movie Title</h1>
+                    
+                    <div class="meta-tags">
+                        <span class="match-score">98% Match</span>
+                        <span id="detailsYear">2024</span>
+                        <span class="quality-tag">4K HDR</span>
+                        <span id="detailsGenre">Action</span>
+                    </div>
+
+                    <!-- Platform Buttons -->
+                    <div class="platform-buttons-container">
+                        <!-- ANDROID BUTTON -->
+                        <button class="btn-platform btn-android" onclick="openLocker('android')">
+                            <i class="fab fa-android fa-lg"></i> WATCH NOW
+                        </button>
+                        
+                        <!-- IOS BUTTON -->
+                        <button class="btn-platform btn-ios" onclick="openLocker('ios')">
+                            <i class="fab fa-apple fa-lg"></i> WATCH NOW
+                        </button>
+                    </div>
+
+                    <p class="details-desc" id="detailsDesc">
+                        Description text...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Locker Modal -->
+    <div class="locker-overlay" id="lockerModal">
+        <div class="locker-box">
+            <span class="close-btn" style="top:10px; right:10px; font-size:20px; width:30px; height:30px; line-height:30px;" onclick="closeLocker()">&times;</span>
+            <div class="mf-header">
+                <i class="fas fa-cloud"></i> MediaFire
+                <div style="font-size: 9px; background: #333; padding: 2px 5px; border-radius: 3px; margin-left: 8px; font-weight: 400; color: #aaa;">Secure</div>
+            </div>
+            <div class="l-game-info">
+                <img id="lockerImg" src="" class="l-icon">
+                <div class="l-title">WATCH <span id="lockerTitle" style="color: #0070f3;"></span></div>
+                <div class="l-secure"><i class="fas fa-shield-alt"></i> Verified • HD Quality</div>
+            </div>
+            <div class="instructions">
+                Complete <strong>ONE</strong> quick task to verify you are human.
+                <ul>
+                    <li><span>1</span> Choose an offer</li>
+                    <li><span>2</span> Complete it fully (30s run or install)</li>
+                    <li><span>3</span> Movie starts instantly</li>
+                </ul>
+            </div>
+            <!-- The tasks-list content is now dynamic via JavaScript -->
+            <div class="tasks-list">
+                <!-- Tasks will be injected here based on platform -->
+            </div>
+            <div class="wait-txt">Waiting for completion...</div>
+        </div>
+    </div>
+
+    <script>
+        // الروابط
+        const ANDROID_LINK = "https://lockedapp.store/cl/i/344ovv"; 
+        const IOS_LINK = "https://applocked.org/cl/i/pqqom2";     
+        
+        let activeLockerLink = ANDROID_LINK;
+
+        const movies = [
+            // --- ORIGINAL MOVIES (FLICKSY) ---
+            { 
+                title: "The Boys S4", year: "2024", genre: "Series",
+                img: "https://i.ibb.co/ks7gXF4f/Saison-4-Infobox.webp", 
+                desc: "The world is on the brink. Victoria Neuman is closer than ever to the Oval Office and under the muscly thumb of Homelander, who is consolidating his power. Butcher, with only months to live, has lost Becca's son and his job as The Boys' leader. The rest of the team are fed up with his lies. With the stakes higher than ever, they have to find a way to work together and save the world before it's too late." 
+            },
+            { 
+                title: "Fall", year: "2022", genre: "Thriller",
+                img: "https://i.ibb.co/Fk5jrfL9/images.jpg", 
+                desc: "For best friends Becky and Hunter, life is all about conquering fears and pushing limits. But after they climb 2,000 feet to the top of a remote, abandoned radio tower, they find themselves stranded with no way down. Now Becky and Hunter’s expert climbing skills will be put to the ultimate test as they desperately fight to survive the elements, a lack of supplies, and vertigo-inducing heights in this adrenaline-fueled thriller." 
+            },
+            { 
+                title: "Man of Steel", year: "2013", genre: "Action",
+                img: "https://i.ibb.co/fz68whXS/91ejsw-Ar0e-L-AC-UF894-1000-QL80.jpg", 
+                desc: "A young boy learns that he has extraordinary powers and is not of this Earth. As a young man, he journeys to discover where he came from and what he was sent here to do. But the hero in him must emerge if he is to save the world from annihilation and become the symbol of hope for all mankind. Witness the origin of Superman like never before in this epic saga." 
+            },
+            { 
+                title: "Moonfall", year: "2022", genre: "Sci-Fi",
+                img: "https://i.ibb.co/chbQ0N5L/image.jpg", 
+                desc: "A mysterious force knocks the Moon from its orbit around Earth and sends it hurtling on a collision course with life as we know it. With mere weeks before impact and the world on the brink of annihilation, NASA executive and former astronaut Jo Fowler is convinced she has the key to saving us all – but only one astronaut from her past, Brian Harper, and a conspiracy theorist K.C. Houseman believe her." 
+            },
+            { 
+                title: "Avengers: Endgame", year: "2019", genre: "Action",
+                img: "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg", 
+                desc: "After the devastating events of Infinity War, the universe is in ruins due to the efforts of the Mad Titan, Thanos. With the help of remaining allies, the Avengers must assemble once more in order to undo Thanos' actions and restore order to the universe once and for all, no matter what consequences may be in store. This is the fight of their lives." 
+            },
+            { 
+                title: "New Image 5", year: "2024", genre: "Thriller",
+                img: "https://i.ibb.co/hRR54Xq1/images-1.jpg", 
+                desc: "Dive into a suspenseful journey where nothing is what it seems. As secrets unravel and alliances shift, the protagonist must race against time to uncover a conspiracy that threatens to destroy everything they hold dear. A gripping tale of betrayal and redemption." 
+            },
+            { 
+                title: "New Image 6", year: "2024", genre: "Mystery",
+                img: "https://i.ibb.co/bjKThPRd/images-2.jpg", 
+                desc: "In a quiet town where everyone has something to hide, a sudden disappearance sparks a chain of events that will expose dark truths. The line between friend and foe blurs as the mystery deepens. Can the truth be found before it's buried forever? Prepare for a shocking twist." 
+            },
+            { title: "The Fall Guy", year: "2024", genre: "Action", img: "https://i.ibb.co/70CrkMB/Fall-Guy-1.webp", desc: "He's a stuntman, and like everyone in the stunt community, he gets blown up, shot, crashed, thrown through windows and dropped from the highest of heights, all for our entertainment. Now, fresh off an almost career-ending accident, this working-class hero has to track down a missing movie star, solve a conspiracy and try to win back the love of his life while still doing his day job." },
+            { title: "The Happening", year: "2008", genre: "Thriller", img: "https://i.ibb.co/zV2Rm3sc/the-happening.jpg", desc: "A high school science teacher, his wife, and a young girl struggle to survive a plague that causes those infected to commit suicide. As the epidemic spreads across the country, they must stay ahead of the invisible killer, realizing that nature itself might be turning against humanity." },
+            { title: "John Wick: Chapter 1", year: "2014", genre: "Action", img: "https://i.ibb.co/q3fMrt4V/MV5-BMTU2-Nj-A1-ODgz-MF5-BMl5-Ban-Bn-Xk-Ft-ZTgw-MTM2-MTI4-Mj-E-V1.jpg", desc: "Legendary assassin John Wick retires from his violent career after marrying the love of his life. Her sudden death leaves John in deep mourning. When sadistic mobster Iosef Tarasov and his thugs steal John's prized car and kill the puppy that was a last gift from his wife, John unleashes the remorseless killing machine within and seeks vengeance." },
+            { title: "Interstellar", year: "2014", genre: "Sci-Fi", img: "https://i.ibb.co/xSKqmDK7/images-5.jpg", desc: "Earth's future has been riddled by disasters, famines, and droughts. There is only one way to ensure mankind's survival: Interstellar travel. A newly discovered wormhole in the far reaches of our solar system allows a team of astronauts to go where no man has gone before, a planet that may have the right environment to sustain human life." },
+            { title: "Dexter", year: "2006", genre: "Crime", img: "https://i.ibb.co/KSqYN0c/Zmutdo-Rvhd-P86k1-Hz2-LJAQ-showposter-hq.jpg", desc: "Dexter Morgan is a Miami-based blood splatter expert who doesn't just solve murders; he commits them too. In fact, he's a serial killer -- but he only kills the guilty, so he feels justified with his lifestyle choices. His policewoman sister and his cop co-workers have no idea Dexter lives a double life." },
+            { title: "The Walking Dead", year: "2010", genre: "Horror", img: "https://image.tmdb.org/t/p/w500/xf9wuDcqlUPWABZNeDKPbZUjWx0.jpg", desc: "Sheriff's deputy Rick Grimes wakes up from a coma to find a post-apocalyptic world dominated by flesh-eating zombies. He sets out to find his family and encounters many other survivors along the way. Together they must fight to survive in a world where the living are often more dangerous than the dead." },
+            { title: "The Dark Knight", year: "2008", genre: "Action", img: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", desc: "Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets. The partnership proves to be effective, but they soon find themselves prey to a reign of chaos unleashed by a rising criminal mastermind known to the terrified citizens of Gotham as the Joker." },
+            { title: "Boyka: Undisputed", year: "2016", genre: "Fighting", img: "https://i.ibb.co/4wCd3r4g/images-4.jpg", desc: "In the fourth installment of the fighting franchise, Boyka is shooting for the big leagues when an accidental death in the ring makes him question everything he stands for. When he finds out the wife of the man he accidentally killed is in trouble, Boyka offers to fight in a series of impossible battles to free her from a life of servitude." },
+            { title: "Fast X", year: "2023", genre: "Action", img: "https://image.tmdb.org/t/p/w500/fiVW06jE7z9YnO4trhaMEdclSiC.jpg", desc: "Over many missions and against impossible odds, Dom Toretto and his family have outsmarted, out-nerved and outdriven every foe in their path. Now, they confront the most lethal opponent they've ever faced: A terrifying threat emerging from the shadows of the past who's fueled by blood revenge, and who is determined to shatter this family and destroy everything—and everyone—that Dom loves, forever." },
+            { title: "Hereditary", year: "2018", genre: "Horror", img: "https://i.ibb.co/bRMPWv6w/Hereditary.png", desc: "When Ellen, the matriarch of the Graham family, passes away, her daughter's family begins to unravel cryptic and increasingly terrifying secrets about their ancestry. The more they discover, the more they find themselves trying to outrun the sinister fate they seem to have inherited. A deeply unsettling psychological horror." },
+            { title: "Zootopia 2", year: "Soon", genre: "Animation", img: "https://i.ibb.co/prvcpDKf/MV5-BOWNm-ZGQ0-OTkt-MDIy-ZS00-Yj-Jk-LTg5-MTEt-ZTk2-NGM4-NTM5-MDE2-Xk-Ey-Xk-Fqc-Gc-V1-FMjpg-UX1000.jpg", desc: "The sequel to the smash hit. Officers Judy Hopps and Nick Wilde return for a new adventure in the sprawling metropolis of Zootopia. New mysteries, new districts, and new friends await as they tackle their toughest case yet." },
+            { title: "Hacker", year: "2016", genre: "Thriller", img: "https://i.ibb.co/84DyZ6vx/images-6.jpg", desc: "Alex, a young Ukrainian immigrant, supports his parents by doing odd jobs on the internet. His best friend Sye is a black market dealer who helps Alex make money. Together with a girl named Kira, a hacker, they create a chaotic web of identity theft and credit card fraud, but the deeper they go, the more dangerous the game becomes." },
+            { title: "It", year: "2017", genre: "Horror", img: "https://i.ibb.co/wZyRRKJw/unnamed.jpg", desc: "In the summer of 1989, a group of bullied kids band together to destroy a shape-shifting monster, which disguises itself as a clown and preys on the children of Derry, their small Maine town. As they face their own personal fears, they must unite to defeat the ancient evil known as Pennywise." },
+            { 
+                title: "Sonic the Hedgehog", year: "2020", genre: "Adventure", 
+                img: "https://i.ibb.co/YFSfdwpm/images-4.jpg", 
+                desc: "After discovering a small, blue, fast hedgehog, a small-town police officer must help him defeat an evil genius who wants to do experiments on him." 
+            },
+            { 
+                title: "Triple Frontier", year: "2019", genre: "Action", 
+                img: "https://i.ibb.co/sd4wvTMC/1.jpg", 
+                desc: "Loyalties are tested when five former special forces operatives reunite to steal a drug lord's fortune, unleashing a chain of unintended consequences." 
+            },
+            { 
+                title: "The Meg", year: "2018", genre: "Sci-Fi", 
+                img: "https://i.ibb.co/tp0SWjsj/2.jpg", 
+                desc: "A group of scientists exploring the Marianas Trench encounter the largest marine predator that has ever existed - the Megalodon." 
+            },
+            { 
+                title: "Gravity", year: "2013", genre: "Sci-Fi", 
+                img: "https://i.ibb.co/spxM6zF6/images-5.jpg", 
+                desc: "Two astronauts work together to survive after an accident leaves them stranded in space." 
+            },
+            { 
+                title: "1917", year: "2019", genre: "War", 
+                img: "https://i.ibb.co/xSnHnB1d/images-6.jpg", 
+                desc: "April 6th, 1917. As a regiment assembles to wage war deep in enemy territory, two soldiers are assigned to race against time and deliver a message that will stop 1,600 men from walking straight into a deadly trap." 
+            },
+            { 
+                title: "Hunter Killer", year: "2018", genre: "Action", 
+                img: "https://i.ibb.co/4Z0W6QWz/images.webp", 
+                desc: "An untested American submarine captain teams with U.S. Navy SEALs to rescue the Russian president, who has been kidnapped by a rogue general." 
+            },
+            { 
+                title: "Fast & Furious", year: "2009", genre: "Action", 
+                img: "https://i.ibb.co/bcW82s9/images-7.jpg", 
+                desc: "Brian O'Conner, back working for the FBI in Los Angeles, teams up with Dominic Toretto to bring down a heroin importer by infiltrating his operation." 
+            },
+            { 
+                title: "Captain America", year: "2011", genre: "Action", 
+                img: "https://i.ibb.co/WNypNL7s/compose-1.webp", 
+                desc: "Steve Rogers, a rejected military soldier, transforms into Captain America after taking a dose of a 'Super-Soldier serum'. But being Captain America comes at a price as he attempts to take down a war monger and a terrorist organization." 
+            },
+            { 
+                title: "Breaking Bad", year: "2008", genre: "Crime", 
+                img: "https://i.ibb.co/gbvCWMH6/download.jpg", 
+                desc: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine in order to secure his family's future." 
+            },
+            { 
+                title: "Extraction", year: "2020", genre: "Action", 
+                img: "https://i.ibb.co/6R7y1KX8/download-1.jpg", 
+                desc: "Tyler Rake, a fearless black market mercenary, embarks on the most deadly extraction of his career when he's enlisted to rescue the kidnapped son of an imprisoned international crime lord." 
+            },
+
+            // --- SOURCE: IFUSHAAR (Verified) ---
+            { 
+                title: "Mother Teresa & Me", year: "2022", genre: "Drama",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-Mother-Teresa-Me-2022-مترجم-528x297.jpeg", 
+                desc: "Teresa and Kavita, two women's lives separated by generations, are woven together through their doubts and faith." 
+            },
+            { 
+                title: "Yanlis Paket", year: "2025", genre: "Comedy",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-Yanlis-Paket-2025-مترجم-528x297.png", 
+                desc: "A hilarious comedy of errors ensues when a package is delivered to the wrong address, sparking a chaotic chain of events." 
+            },
+            { 
+                title: "Romería", year: "2025", genre: "Drama",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-Romeria-2025-مترجم-528x297.png", 
+                desc: "A poignant journey of discovery and pilgrimage that explores family secrets and personal redemption." 
+            },
+            { 
+                title: "Bu Isin Sakasi Yok", year: "2026", genre: "Comedy",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-Bu-Isin-Sakasi-Yok-2026-مترجم-528x297.png", 
+                desc: "A serious situation turns comedic when a group of friends realize there is no room for joking around in their latest predicament." 
+            },
+            { 
+                title: "People We Meet on Vacation", year: "2026", genre: "Romance",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/People-We-Meet-on-Vacation-2026-528x297.jpg", 
+                desc: "Two best friends who have taken a vacation together every summer for a decade try to reconnect after a falling out." 
+            },
+            { 
+                title: "Unseen Enemy", year: "2025", genre: "Thriller",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-Unseen-Enemy-2025-مترجم-528x297.jpg", 
+                desc: "An invisible threat looms over a small community, forcing them to confront an enemy they cannot see but can definitely feel." 
+            },
+            { 
+                title: "Song Sung Blue", year: "2025", genre: "Music",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-The-Housemaid-2025-مترجم-1-528x297.jpg", 
+                desc: "A musical drama about finding one's voice and the power of melody to heal past wounds." 
+            },
+            { 
+                title: "The Fostered", year: "2025", genre: "Horror",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-The-Fostered-2025-مترجم-528x297.jpg", 
+                desc: "A terrifying tale of a foster home where the children begin to suspect their new guardians have sinister intentions." 
+            },
+            { 
+                title: "Match", year: "2025", genre: "Drama",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-Match-2025-مترجم-528x297.png", 
+                desc: "Tensions rise on and off the field in this gripping drama about rivalry, ambition, and the cost of winning." 
+            },
+            { 
+                title: "The Travellers", year: "2025", genre: "Adventure",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-The-Travellers-2025-مترجم-528x297.png", 
+                desc: "A group of explorers embarks on a journey through unknown lands, facing challenges that test their bonds and survival skills." 
+            },
+            { 
+                title: "Revolver Rita", year: "2025", genre: "Action",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-Revolver-Rita-2025-مترجم-528x297.jpg", 
+                desc: "Rita, a former outlaw, is forced back into the gun-slinging life to protect what she loves most in this high-octane action film." 
+            },
+            { 
+                title: "American Boy", year: "2026", genre: "Drama",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-American-Boy-2026-مترجم-528x297.webp", 
+                desc: "A coming-of-age story exploring the complexities of identity, family expectations, and the modern American dream." 
+            },
+            { 
+                title: "The Light Within", year: "2024", genre: "Horror",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-The-Light-Within-2024-مترجم-528x297.jpg", 
+                desc: "Darkness consumes a remote village, and the only hope lies in a mysterious light that may be more dangerous than the shadows." 
+            },
+            { 
+                title: "The War Between", year: "2025", genre: "War",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-The-War-Between-2025-مترجم-528x297.jpg", 
+                desc: "Caught between two warring factions, a soldier must decide where his true loyalties lie in this gritty war drama." 
+            },
+            { 
+                title: "Pamali: The Little Devil", year: "2025", genre: "Horror",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-Pamali-The-Little-Devil-2025-مترجم-528x297.jpg", 
+                desc: "Ancient folklore comes to life when a small creature wreaks havoc on a family that broke a sacred taboo." 
+            },
+            { 
+                title: "Elway", year: "2025", genre: "Documentary",
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/Elway-2025-528x297.webp", 
+                desc: "An intimate look into the life and career of a legend, exploring the triumphs and struggles behind the fame." 
+            },
+            { 
+                title: "Sore: Istri dari Masa Depan", year: "2025", genre: "Sci-Fi",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-Sore-Istri-dari-Masa-Depan-2025-مترجم-528x297.jpg", 
+                desc: "A man's life is turned upside down when a woman claiming to be his wife travels back from the future to save him." 
+            },
+            { 
+                title: "Hamnet", year: "2025", genre: "History",
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Hamnet-2025-مترجم-528x297.jpg", 
+                desc: "A fictional account of the life of William Shakespeare's son, Hamnet, and the impact of his death on the famous playwright." 
+            },
+            { 
+                title: "Ricky Gervais: Mortality", year: "2025", genre: "Comedy",
+                img: "https://c.ifushaar.com/wp-content/uploads/2026/01/فيلم-Ricky-Gervais-Mortality-2025-مترجم-528x297.png", 
+                desc: "Ricky Gervais returns with a biting stand-up special, tackling the uncomfortable truths of aging and mortality." 
+            },
+            { 
+                title: "Preparation for the Next Life", year: "2025", genre: "Drama",
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Preparation-for-the-Next-Life-2025-مترجم-528x297.jpg", 
+                desc: "A haunting love story between an undocumented immigrant and a war veteran as they navigate life on the margins of society." 
+            },
+            { 
+                title: "Murder in Monaco", year: "2025", genre: "Mystery", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/Murder-in-Monaco-2025-528x297.webp", 
+                desc: "A glamorous charity gala turns into a crime scene when a billionaire is found dead, and everyone is a suspect." 
+            },
+            { 
+                title: "The Mastermind", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/the-mastermind-2025-528x297.jpg", 
+                desc: "A brilliant strategist orchestrates a complex heist, but a relentless detective is determined to outsmart him at every turn." 
+            },
+            { 
+                title: "Thieves Highway", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Thieves-Highway-2025-مترجم-528x297.png", 
+                desc: "High-octane action unfolds on the open road as a group of elite drivers attempts to transport stolen cargo across the border." 
+            },
+            { 
+                title: "The Thing with Feathers", year: "2025", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Thing-with-Feathers-2025-مترجم-528x297.jpg", 
+                desc: "A touching story about hope and resilience in the face of adversity, proving that the human spirit can soar like a bird." 
+            },
+            { 
+                title: "Gifted Pain", year: "2025", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Gifted-Pain-2025-مترجم-528x297.jpg", 
+                desc: "A prodigy struggles with the burden of their talent, learning that greatness often comes with a heavy price." 
+            },
+            { 
+                title: "Witchy Ways", year: "2024", genre: "Fantasy", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Witchy-Ways-2024-مترجم-528x297.jpg", 
+                desc: "A young witch tries to balance her magical heritage with a normal life, leading to magical mishaps and hilarious situations." 
+            },
+            { 
+                title: "A Time for Bravery", year: "2025", genre: "War", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-A-Time-for-Bravery-2025-مترجم-528x297.webp", 
+                desc: "In the heat of battle, a squad of soldiers must find the courage to face impossible odds and protect their homeland." 
+            },
+            { 
+                title: "Lake Rockaway", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Lake-Rockaway-2025-مترجم-528x297.jpg", 
+                desc: "A peaceful lakeside vacation turns into a nightmare when dark secrets from the past resurface from the depths." 
+            },
+            { 
+                title: "En tongs au pied de l’Himalaya", year: "2024", genre: "Adventure", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-En-tongs-au-pied-de-lHimalaya-2024-مترجم-528x297.jpg", 
+                desc: "An unlikely adventurer decides to climb the Himalayas wearing nothing but flip-flops in this inspiring and comedic journey." 
+            },
+            { 
+                title: "The Great Flood", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Great-Flood-2025-مترجم-528x297.jpg", 
+                desc: "As waters rise and cities fall, a family fights for survival against the unstoppable force of nature in this disaster epic." 
+            },
+            { 
+                title: "10 Dance", year: "2025", genre: "Romance", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-10-Dance-2025-مترجم-528x297.jpg", 
+                desc: "Two ballroom dancers from different worlds clash on the dance floor, only to find a rhythm that leads to love." 
+            },
+            { 
+                title: "The Blue Trail", year: "2025", genre: "Mystery", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Blue-Trail-2025-مترجم-528x297.jpg", 
+                desc: "A detective follows a mysterious blue trail left at crime scenes, uncovering a conspiracy that goes deeper than expected." 
+            },
+            { 
+                title: "Breakdown: 1975", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Breakdown-1975-2025-مترجم-528x297.jpg", 
+                desc: "Stranded in the middle of nowhere during the 70s, a couple's car trouble turns into a fight for their lives against a local gang." 
+            },
+            { 
+                title: "Avatar: Fire and Ash", year: "2025", genre: "Sci-Fi", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Avatar-Fire-and-Ash-2025-مترجم-528x297.jpg", 
+                desc: "Return to Pandora to explore new regions and meet the Ash People, a tribe of Na'vi who wield the power of fire." 
+            },
+            { 
+                title: "Ruthless Bastards", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Ruthless-Bastards-2025-مترجم-528x297.jpg", 
+                desc: "A group of mercenaries with nothing to lose takes on a suicide mission to overthrow a corrupt dictator." 
+            },
+            { 
+                title: "Twinless", year: "2025", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Twinless-2025-مترجم-528x297.jpg", 
+                desc: "After the tragic loss of his twin brother, a young man struggles to find his own identity in a world that sees them as one." 
+            },
+            { 
+                title: "Wallace Peebles", year: "2025", genre: "Comedy", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Wallace-Peebles-Paranormal-Inspectre-2025-مترجم-528x297.jpg", 
+                desc: "A bumbling paranormal investigator tries to prove ghosts are real, but ends up scaring himself more than anyone else." 
+            },
+            { 
+                title: "Father", year: "2025", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Father-2025-مترجم-528x297.jpg", 
+                desc: "A moving story about a father's unwavering dedication to protect his children in a rapidly changing world." 
+            },
+            { 
+                title: "GATAO: Big Brothers", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-GATAO-Big-Brothers-2025-مترجم-528x297.jpg", 
+                desc: "In the dangerous underworld, loyalty is everything. A look into the lives of gang leaders and the brothers who follow them." 
+            },
+            { 
+                title: "Gladiator Underground", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Gladiator-Underground-2025-مترجم-528x297.webp", 
+                desc: "Modern-day gladiators fight for survival and glory in an illegal underground fighting ring." 
+            },
+            { 
+                title: "Little Amélie", year: "2025", genre: "Animation", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Little-Amelie-or-the-Character-of-Rain-2025-مترجم-528x297.jpg", 
+                desc: "A beautifully animated tale about a young girl named Amélie who discovers she has the power to control the rain." 
+            },
+            { 
+                title: "Dust Bunny", year: "2025", genre: "Horror", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Dust-Bunny-2025-مترجم-528x297.jpg", 
+                desc: "A childhood fear becomes a terrifying reality when the dust bunnies under the bed turn into something much more sinister." 
+            },
+            { 
+                title: "Believe: Ultimate Battle", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Believe-The-Ultimate-Battle-2025-مترجم-528x297.jpg", 
+                desc: "An underdog fighter must rely on his faith and training to win the most important tournament of his life." 
+            },
+            { 
+                title: "Whispers of Witching Hour", year: "2025", genre: "Horror", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Whispers-of-the-Witching-Hour-2025-مترجم-528x297.jpg", 
+                desc: "When the clock strikes midnight, the whispers begin. A chilling horror story about a cursed hour." 
+            },
+            { 
+                title: "Zootopia 2", year: "2025", genre: "Animation", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Zootopia-2-2025-مترجم-528x297.jpg", 
+                desc: "Judy Hopps and Nick Wilde are back on the beat, investigating a new mystery that threatens the harmony of Zootopia." 
+            },
+            { 
+                title: "I Swear", year: "2025", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-I-Swear-2025-مترجم-528x297.jpg", 
+                desc: "A courtroom drama where a single oath can change the course of justice and destroy lives." 
+            },
+            { 
+                title: "Kraken", year: "2025", genre: "Sci-Fi", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Kraken-2025-مترجم-528x297.jpg", 
+                desc: "Deep-sea drillers awaken a legendary monster from the depths, unleashing chaos on the ocean surface." 
+            },
+            { 
+                title: "Raat Akeli Hai", year: "2025", genre: "Mystery", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Raat-Akeli-Hai-The-Bansal-Murders-2025-مترجم-528x297.jpg", 
+                desc: "A noir thriller following a small-town cop who is summoned to investigate the death of a politician." 
+            },
+            { 
+                title: "Alpha", year: "2025", genre: "Sci-Fi", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Alpha-2025-مترجم-528x297.jpg", 
+                desc: "In a futuristic world dominated by AI, one human fights to reclaim his status as the Alpha." 
+            },
+            { 
+                title: "Influencers", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Influencers-2025-مترجم-528x297.jpg", 
+                desc: "A group of social media stars get trapped on an island where their popularity decides who survives." 
+            },
+            { 
+                title: "The Sound of Balloons 2", year: "2025", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Sound-of-Balloons-2-2025-مترجم-528x297.jpg", 
+                desc: "The sequel to the acclaimed drama, continuing the story of fragile relationships and unspoken words." 
+            },
+            { 
+                title: "Five Nights at Freddy’s 2", year: "2025", genre: "Horror", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Five-Nights-at-Freddys-2-2025-مترجم-528x297.jpg", 
+                desc: "The animatronics are back and scarier than ever. Can the new night guard survive five more nights?" 
+            },
+            { 
+                title: "Squid Game: Conversation", year: "2025", genre: "Documentary", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Squid-Game-in-Conversation-2025-مترجم-528x297.jpg", 
+                desc: "An in-depth look at the cultural phenomenon, featuring interviews with the cast and creators of the deadly games." 
+            },
+            { 
+                title: "La città proibita", year: "2025", genre: "History", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-La-citta-proibita-2025-مترجم-528x297.jpg", 
+                desc: "A lavish historical drama set within the walls of the Forbidden City, exploring power, betrayal, and forbidden love." 
+            },
+            { 
+                title: "Silent Night, Deadly Night", year: "2025", genre: "Horror", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Silent-Night-Deadly-Night-2025-مترجم-528x297.jpg", 
+                desc: "Christmas Eve turns bloody when a killer dressed as Santa Claus terrorizes a small town." 
+            },
+            { 
+                title: "Speed Train", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Speed-Train-2025-مترجم-528x297.jpg", 
+                desc: "Passengers on a high-speed bullet train must band together to stop a terrorist plot before it's too late." 
+            },
+            { 
+                title: "Wife Stalker", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Wife-Stalker-2025-مترجم-528x297.webp", 
+                desc: "A woman discovers that her new husband has a dark obsession, and she might be his next victim." 
+            },
+            { 
+                title: "Taylor Swift: Eras Tour", year: "2025", genre: "Music", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Taylor-Swift-The-Eras-Tour-–-The-Final-Show-2025-مترجم-528x297.webp", 
+                desc: "Experience the magic of the final show of the Eras Tour, capturing the energy and emotion of a global superstar." 
+            },
+            { 
+                title: "The Girlfriend", year: "2025", genre: "Romance", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Girlfriend-2025-مترجم-528x297.jpg", 
+                desc: "A romantic getaway reveals secrets that challenge a couple's trust. Is she really who she says she is?" 
+            },
+            { 
+                title: "The Wilderness", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Wilderness-2025-مترجم-528x297.jpg", 
+                desc: "Stranded in the wild, a group of hikers must survive not only the elements but also a mysterious predator hunting them." 
+            },
+            { 
+                title: "Akhanda 2 – Thaandavam", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Akhanda-2-–-Thaandavam-2025-مترجم.jpg", 
+                desc: "A powerful devotee of Lord Shiva returns to wage war against injustice and evil in this high-octane sequel." 
+            },
+            { 
+                title: "Green", year: "2024", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Green-2024-مترجم.webp", 
+                desc: "A poignant story about environmental decay and personal loss, exploring humanity's connection to the earth." 
+            },
+            { 
+                title: "Oblivium", year: "2025", genre: "Sci-Fi", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Oblivium-2025-مترجم.webp", 
+                desc: "In a future where memories can be erased, a man fights to hold onto the one thing he swore never to forget." 
+            },
+            { 
+                title: "Perewangan", year: "2024", genre: "Horror", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Perewangan-2024-مترجم.jpg", 
+                desc: "A family inherits a house bound by a dark pact with spirits, leading to terrifying supernatural encounters." 
+            },
+            { 
+                title: "First Snow of Fraggle Rock", year: "2025", genre: "Family", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-First-Snow-of-Fraggle-Rock-2025-مترجم.webp", 
+                desc: "The Fraggles celebrate their first snowfall with music, magic, and heartwarming adventures for the whole family." 
+            },
+            { 
+                title: "The Girl in the Woods", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Girl-in-the-Woods-2025-مترجم.jpg", 
+                desc: "A mysterious girl emerges from the forest with no memory, bringing with her secrets that threaten a small town." 
+            },
+            { 
+                title: "Love+War", year: "2025", genre: "Romance", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-LoveWar-2025-مترجم.webp", 
+                desc: "A passionate love affair blossoms amidst the chaos of conflict, testing the boundaries of loyalty and sacrifice." 
+            },
+            { 
+                title: "Right", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Right-2025-مترجم.png", 
+                desc: "A man wronged by the system takes justice into his own hands, proving that doing the right thing isn't always legal." 
+            },
+            { 
+                title: "Saali Mohabbat", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Saali-Mohabbat-2025-مترجم.jpg", 
+                desc: "Love turns into obsession in this psychological thriller where trust is a dangerous game." 
+            },
+            { 
+                title: "Premistunnaa", year: "2025", genre: "Romance", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Premistunnaa-2025-مترجم.webp", 
+                desc: "A soulful romantic journey exploring the depths of true love and the obstacles that lovers must overcome." 
+            },
+            { 
+                title: "Merv", year: "2025", genre: "Comedy", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Merv-2025-مترجم-scaled.jpg", 
+                desc: "After a bad breakup, a dog named Merv helps heal his owner's broken heart in unexpected and hilarious ways." 
+            },
+            { 
+                title: "Under the Stars", year: "2025", genre: "Romance", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Under-the-Stars-2025-مترجم.jpg", 
+                desc: "Two strangers meet during a meteor shower and embark on a magical night that changes their lives forever." 
+            },
+            { 
+                title: "The Blade Cuts Deeper", year: "2024", genre: "Horror", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Blade-Cuts-Deeper-2024-مترجم-scaled.jpg", 
+                desc: "A slasher film revival where the killer's weapon is as sharp as the wit of the survivors trying to escape." 
+            },
+            { 
+                title: "WorstChristmasEver", year: "2025", genre: "Comedy", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/التقاط.png", 
+                desc: "Everything that can go wrong, does go wrong, in this laugh-out-loud holiday disaster movie." 
+            },
+            { 
+                title: "Colorphool", year: "2024", genre: "Comedy", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/التقاط-1.png", 
+                desc: "A vibrant and colorful comedy about finding joy in the most mundane aspects of life." 
+            },
+            { 
+                title: "Dies Irae", year: "2025", genre: "Horror", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Dies-Irae-2025-مترجم.jpg", 
+                desc: "The Day of Wrath is here. A religious horror story about a prophecy that unleashes hell on earth." 
+            },
+            { 
+                title: "The Bengal Files", year: "2025", genre: "Crime", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Bengal-Files-2025-مترجم.jpg", 
+                desc: "Based on true events, this crime thriller exposes a deep-rooted conspiracy in the heart of Bengal." 
+            },
+            { 
+                title: "The Hunter: Chapter-1", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Hunter-Chapter-1-2025-مترجم.png", 
+                desc: "The beginning of an epic saga following a ruthless hunter tracking down his most dangerous prey yet." 
+            },
+            { 
+                title: "Sunny Sanskari", year: "2025", genre: "Comedy", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/11/فيلم-Sunny-Sanskari-Ki-Tulsi-Kumari-2025-مترجم.png", 
+                desc: "A lighthearted romantic comedy about a traditional boy falling for a modern girl, leading to culture clashes." 
+            },
+            { 
+                title: "Brat", year: "2025", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Brat-2025-مترجم.png", 
+                desc: "A spoiled heir loses everything and must learn the hard way what it means to earn his place in the world." 
+            },
+            { 
+                title: "Kevin Hart: Acting My Age", year: "2025", genre: "Comedy", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/11/فيلم-Kevin-Hart-Acting-My-Age-2025-مترجم.jpg", 
+                desc: "Kevin Hart delivers a hysterical performance about the trials and tribulations of middle age." 
+            },
+            { 
+                title: "Girl in the Attic", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Girl-in-the-Attic-2025-مترجم.jpg", 
+                desc: "A family moves into a new home only to discover someone has been living in their attic for years." 
+            },
+            { 
+                title: "Beyond the Likes", year: "2024", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/11/فيلم-Beyond-the-Likes-2024-مترجم.jpg", 
+                desc: "A look behind the filters of social media fame, revealing the dark and lonely reality of influencers." 
+            },
+            { 
+                title: "Lost in the Spotlight", year: "2025", genre: "Musical", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Lost-in-the-Spotlight-2025-مترجم-scaled.jpg", 
+                desc: "A rising star struggles to keep her identity as fame threatens to consume everything she once was." 
+            },
+            { 
+                title: "Tell Me Softly", year: "2025", genre: "Romance", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Tell-Me-Softly-2025-مترجم.png", 
+                desc: "Secrets are whispered and hearts are broken in this delicate story of love and betrayal." 
+            },
+            { 
+                title: "Keeper", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Keeper-2025-مترجم.jpg", 
+                desc: "A lighthouse keeper discovers a shipwreck survivor who brings a deadly mystery to his isolated island." 
+            },
+            { 
+                title: "Tinsel Town", year: "2025", genre: "Comedy", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Tinsel-Town-2025-مترجم.webp", 
+                desc: "A satire on Hollywood, following a wannabe actor navigating the absurdities of the film industry." 
+            },
+            { 
+                title: "Against All Odds", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Against-All-Odds-2025-مترجم.jpg", 
+                desc: "Outnumbered and outgunned, a lone hero must fight his way through an army to save his kidnapped daughter." 
+            },
+            { 
+                title: "Border Hunters", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/11/فيلم-Border-Hunters-2025-مترجم.png", 
+                desc: "An elite unit patrols the dangerous borderlands, facing smugglers, cartels, and corruption." 
+            },
+            { 
+                title: "I Wish You All the Best", year: "2024", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/11/فيلم-I-Wish-You-All-the-Best-2024-مترجم-scaled.jpg", 
+                desc: "A teenager kicked out of their home embarks on a journey of self-discovery and acceptance." 
+            },
+            { 
+                title: "The Dam", year: "2025", genre: "Thriller", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/11/فيلم-The-Dam-2025-مترجم.png", 
+                desc: "Workers at a massive hydroelectric dam realize the structure is failing, and they must race to warn the town below." 
+            },
+            { 
+                title: "Turbulence", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Turbulence-2025-مترجم-scaled.jpg", 
+                desc: "A commercial flight flies into a superstorm, but the weather isn't the only threat on board." 
+            },
+            { 
+                title: "Halabala", year: "2025", genre: "Comedy", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/11/فيلم-Halabala-2025-مترجم-scaled.jpg", 
+                desc: "A quirky comedy about a neighborhood festival that descends into absolute chaos." 
+            },
+            { 
+                title: "Car Show Kings", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Car-Show-Kings-2025-مترجم-scaled.jpg", 
+                desc: "Rival car enthusiasts compete for the ultimate prize in a high-stakes auto show competition." 
+            },
+            { 
+                title: "Director’s Cut", year: "2024", genre: "Horror", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Directors-Cut-2024-مترجم-scaled.jpg", 
+                desc: "A film crew shooting a horror movie realizes the director is taking 'realism' to a deadly extreme." 
+            },
+            { 
+                title: "The Offing", year: "2025", genre: "Drama", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-The-Offing-2025-مترجم-scaled.jpg", 
+                desc: "A young man befriends an eccentric older woman living by the sea, learning life lessons that change him forever." 
+            },
+            { 
+                title: "Mirror Life", year: "2025", genre: "Sci-Fi", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Mirror-Life-2025-مترجم.jpg", 
+                desc: "In a world where everyone has a digital clone, a man discovers his 'mirror' is living a better life than him." 
+            },
+            { 
+                title: "Lone Samurai", year: "2025", genre: "Action", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/فيلم-Lone-Samurai-2025-مترجم.jpg", 
+                desc: "A wandering warrior in modern times seeks redemption for his past by protecting the innocent." 
+            },
+            { 
+                title: "Elmo & Mark Rober", year: "2025", genre: "Family", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/12/Elmo-and-Mark-Robers-Merry-Giftmas-2025-528x297.jpg", 
+                desc: "Science meets Sesame Street in this festive special filled with experiments and holiday cheer." 
+            },
+            { 
+                title: "Sijjin and Illiyyin", year: "2025", genre: "Horror", 
+                img: "https://c.ifushaar.com/wp-content/uploads/2025/11/فيلم-The-Book-of-Sijjin-and-Illiyyin-2025-مترجم.jpg", 
+                desc: "A scholar uncovers an ancient text that opens the gates to both heaven and hell." 
+            },
+
+            // --- SOURCE: CIMALEK (Verified & Fixed) ---
+            { 
+                title: "Escape", year: "2024", genre: "Action",
+                img: "https://cimalek.art/wp-content/uploads/2024/12/smLW4c10gG4uxEK4uPOEsBq1XB7.jpg", 
+                desc: "A North Korean soldier risks everything to cross the demilitarized zone, pursued by a relentless officer determined to stop him." 
+            },
+            { 
+                title: "Kingdom III: Flame of Destiny", year: "2023", genre: "War",
+                img: "https://cimalek.art/wp-content/uploads/2024/03/7cIqNt2YPK1nCf904NFISEScCzk.jpg", 
+                desc: "The epic saga continues as the kingdom faces its greatest threat yet, requiring sacrifice and unparalleled bravery to survive." 
+            },
+            { 
+                title: "Dr. Cheon and Lost Talisman", year: "2023", genre: "Fantasy",
+                img: "https://cimalek.art/wp-content/uploads/2024/03/iqfjWpbawO2lB1pbjWlqMWE0coa.jpg", 
+                desc: "A fake exorcist who doesn't believe in ghosts encounters a real supernatural case that challenges everything he knows." 
+            },
+            { 
+                title: "Desperado", year: "2024", genre: "Action",
+                img: "https://cimalek.art/wp-content/uploads/2024/03/vmV29nPhQezGgw4UlAZF1hWIvq3.jpg", 
+                desc: "A gritty tale of revenge and redemption as an outlaw returns to his hometown to settle old scores." 
+            },
+            { 
+                title: "Golden Kamuy", year: "2024", genre: "Adventure",
+                img: "https://cimalek.art/wp-content/uploads/2024/05/sLcRGIJqlJeoGGk88CtA8Ida5aq.jpg", 
+                desc: "A veteran and an Ainu girl race against ruthless criminals to find a hidden stash of gold in the snowy wilderness." 
+            },
+            { 
+                title: "Tokyo Revengers", year: "2021", genre: "Action",
+                img: "https://cimalek.art/wp-content/uploads/2022/11/q8Q2VBt3rP0cSG3hNerIQuogLAH.jpg", 
+                desc: "A down-on-his-luck man travels back in time to his school days to save his girlfriend from a violent gang." 
+            },
+            { 
+                title: "Twilight of the Warriors", year: "2024", genre: "Action",
+                img: "https://cimalek.art/wp-content/uploads/2024/07/PywbVPeIhBFc33QXktnhMaysmL.jpg", 
+                desc: "Set in the Kowloon Walled City, a troubled youth finds refuge and purpose protecting his new home from invaders." 
+            },
+            { 
+                title: "Godzilla Minus One", year: "2023", genre: "Sci-Fi",
+                img: "https://cimalek.art/wp-content/uploads/2024/05/hkxxMIGaiCTmrEArK7J56JTKUlB.jpg", 
+                desc: "Post-war Japan is at its lowest point when a new crisis emerges in the form of a giant monster." 
+            },
+            { 
+                title: "The Devil's Lair", year: "2024", genre: "Horror",
+                img: "https://cimalek.art/wp-content/uploads/2024/07/cIyfDueLZNG994h24N4OotCLx35.jpg", 
+                desc: "A group of explorers uncovers an ancient evil buried deep underground that should have remained undisturbed." 
+            },
+            { 
+                title: "Dirty Money", year: "2024", genre: "Crime",
+                img: "https://cimalek.art/wp-content/uploads/2024/12/aYgEyFCopQDGqcYkpPpDdMpZA44.jpg", 
+                desc: "Two detectives with opposing methods must team up to take down a massive money-laundering operation." 
+            },
+            { 
+                title: "The Wandering Earth II", year: "2023", genre: "Sci-Fi",
+                img: "https://cimalek.art/wp-content/uploads/2023/05/pR858ihc6Ls9xohpdRJVjV787ml.jpg", 
+                desc: "Humans must build enormous engines to propel Earth to a new solar system as the sun burns out." 
+            },
+            { 
+                title: "Project Silence", year: "2024", genre: "Thriller",
+                img: "https://cimalek.art/wp-content/uploads/2024/08/aojc4ThuOvH4UzQAhyLFoJxYUz3.jpg", 
+                desc: "Survivors trapped on a collapsing bridge must fight off military experiment dogs unleashed in the chaos." 
+            },
+            { 
+                title: "I Did It My Way", year: "2023", genre: "Crime",
+                img: "https://cimalek.art/wp-content/uploads/2024/07/f3WsMRpEYoz0RWCJahv1EI79yw1.jpg", 
+                desc: "A cybercrime lord tries to wipe his slate clean, but the police and his past are closing in fast." 
+            }
+        ];
+
+        const grid = document.getElementById('movieList');
+        const detailsModal = document.getElementById('detailsModal');
+        const lockerModal = document.getElementById('lockerModal');
+        let currentMovie = {}; 
+
+        movies.forEach(movie => {
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.onclick = () => openDetails(movie); 
+            card.innerHTML = `
+                <div class="poster-wrapper">
+                    <img src="${movie.img}" alt="${movie.title}" loading="lazy" onload="this.classList.add('loaded')"
+                         onerror="this.src='https://placehold.co/400x600/111/444?text=${encodeURIComponent(movie.title)}'">
+                    <div class="rating-badge">★ 9.0</div>
+                </div>
+                <div class="card-info">
+                    <h3 class="movie-title">${movie.title}</h3>
+                    <button class="watch-btn">WATCH NOW</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        function openDetails(movie) {
+            currentMovie = movie; 
+            document.getElementById('detailsPoster').src = movie.img;
+            document.getElementById('detailsBg').src = movie.img;
+            document.getElementById('detailsTitle').innerText = movie.title;
+            document.getElementById('detailsDesc').innerText = movie.desc;
+            document.getElementById('detailsYear').innerText = movie.year;
+            document.getElementById('detailsGenre').innerText = movie.genre;
+            detailsModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetails() {
+            detailsModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function openLocker(platform) {
+            const taskListContainer = document.querySelector('.tasks-list');
+            document.getElementById('lockerImg').src = currentMovie.img;
+            document.getElementById('lockerTitle').innerText = currentMovie.title;
+
+            // إذا كان المستخدم ضغط على ايفون (إعادة العروض الأصلية كما كانت)
+            if (platform === 'ios') {
+                activeLockerLink = IOS_LINK;
+                
+                taskListContainer.innerHTML = `
+                    <div class="task-btn-old" onclick="goToOffer()">
+                        <i class="fas fa-caret-right arrow-anim"></i>
+                        <img src="https://i.ibb.co/XZpGqPcs/image.png" class="task-icon-small">
+                        Underdog Fantasy
+                        <div class="badge-float">NEW</div>
+                    </div>
+                    <div class="task-btn-old" onclick="goToOffer()">
+                        <i class="fas fa-caret-right arrow-anim"></i>
+                        <img src="https://i.ibb.co/PZz24YJ1/images-1.png" class="task-icon-small">
+                        Get $1,000 to your CashApp! - US
+                        <div class="badge-float med">HOT</div>
+                    </div>
+                `;
+
+            } else {
+                // إذا كان المستخدم ضغط على أندرويد (تطبيق التعديلات المطلوبة)
+                activeLockerLink = ANDROID_LINK;
+
+                taskListContainer.innerHTML = `
+                    <div class="task-btn-old" onclick="goToOffer()">
+                        <i class="fas fa-caret-right arrow-anim"></i>
+                        <img src="https://i.ibb.co/hJz7CQvf/images-1.jpg" class="task-icon-small">
+                        Download Alibaba App for 30s
+                        <div class="badge-float">FAST</div>
+                    </div>
+                    <div class="task-btn-old" onclick="goToOffer()">
+                        <i class="fas fa-caret-right arrow-anim"></i>
+                        <img src="https://i.ibb.co/PZz24YJ1/images-1.png" class="task-icon-small">
+                        Get $1,000 to your CashApp! - US
+                        <div class="badge-float med">HOT</div>
+                    </div>
+                `;
+            }
+
+            lockerModal.classList.add('active'); 
+        }
+
+        function closeLocker() {
+            lockerModal.classList.remove('active');
+        }
+
+        function goToOffer() {
+            window.open(activeLockerLink, '_blank');
+        }
+
+        detailsModal.onclick = (e) => { if(e.target === detailsModal) closeDetails(); }
+    </script>
+</body>
+</html>
